@@ -85,6 +85,8 @@ typedef struct {
 	
 	qboolean		incognitoJoinSpec;
 	
+	char				lastSpecChat[512];
+	
 } server_t;
 
 
@@ -311,6 +313,8 @@ extern	cvar_t	*sv_allowLoadPosition;
 extern	cvar_t	*sv_loadPositionWaitTime;
 
 extern	cvar_t	*sv_disableRadio;
+
+extern	cvar_t	*sv_specChatGlobal;
 
 //===========================================================
 

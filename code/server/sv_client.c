@@ -1593,6 +1593,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
  			argsFromOneMaxlen = -1;
  			if (Q_stricmp("say", Cmd_Argv(0)) == 0 ||
 					Q_stricmp("say_team", Cmd_Argv(0)) == 0) {
+				sv.lastSpecChat[0] = '\0';
 				argsFromOneMaxlen = MAX_SAY_STRLEN;
 			}
 			else if (Q_stricmp("tell", Cmd_Argv(0)) == 0) {

@@ -692,6 +692,8 @@ void SV_Init (void) {
 	
 	sv_disableRadio = Cvar_Get("sv_disableRadio", "0", CVAR_ARCHIVE);
 	
+	sv_specChatGlobal = Cvar_Get ("sv_specChatGlobal", "0", CVAR_ARCHIVE );
+	
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
 

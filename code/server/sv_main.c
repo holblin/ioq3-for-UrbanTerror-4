@@ -63,6 +63,8 @@ cvar_t	*sv_loadPositionWaitTime;
 
 cvar_t	*sv_disableRadio;
 
+cvar_t	*sv_specChatGlobal;		// whether to broadcast spec chat globall (default 0 don't broadcast)
+
 /*
 =============================================================================
 
@@ -219,6 +221,15 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 			msglen >= 17 + 7 &&
 			!strcmp(" called a vote.\n\"", ((char *) message) + msglen - 17)) {
 		sv.lastCallvoteCyclemapTime = svs.time;
+	}
+
+	if (sv_specChatGlobal->integer > 0 && cl != NULL &&
+			!Q_strncmp((char *) message, "chat \"^7(SPEC) ", 15)) {
+		if (!Q_strncmp((char *) message, sv.lastSpecChat, sizeof(sv.lastSpecChat) - 1)) {
+			return;
+		}
+		Q_strncpyz(sv.lastSpecChat, (char *) message, sizeof(sv.lastSpecChat));
+		cl = NULL;
 	}
 
 	if ( cl != NULL ) {
