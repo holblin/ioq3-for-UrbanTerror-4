@@ -56,6 +56,11 @@ cvar_t	*sv_strictAuth;
 
 cvar_t	*sv_callvoteCyclemapWaitTime;
 
+cvar_t	*sv_allowGoto;
+cvar_t	*sv_gotoWaitTime;
+cvar_t	*sv_allowLoadPosition;
+cvar_t	*sv_loadPositionWaitTime;
+
 /*
 =============================================================================
 

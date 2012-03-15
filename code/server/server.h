@@ -174,7 +174,14 @@ typedef struct client_s {
 	netchan_buffer_t **netchan_end_queue;
 
 	int				oldServerTime;
-	qboolean			csUpdated[MAX_CONFIGSTRINGS+1];	
+	qboolean			csUpdated[MAX_CONFIGSTRINGS+1];
+
+	vec3_t		savedPosition;
+	qboolean	positionIsSaved;
+	int		lastLoadPositionTime;
+	qboolean	allowGoto;
+	int		lastGotoTime;
+
 } client_t;
 
 //=============================================================================
@@ -293,6 +300,11 @@ extern	cvar_t	*sv_lanForceRate;
 extern	cvar_t	*sv_strictAuth;
 
 extern	cvar_t	*sv_callvoteCyclemapWaitTime;
+
+extern	cvar_t	*sv_allowGoto;
+extern	cvar_t	*sv_gotoWaitTime;
+extern	cvar_t	*sv_allowLoadPosition;
+extern	cvar_t	*sv_loadPositionWaitTime;
 
 //===========================================================
 
