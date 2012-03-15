@@ -689,7 +689,9 @@ void SV_Init (void) {
 	sv_gotoWaitTime = Cvar_Get("sv_gotoWaitTime", "180", CVAR_ARCHIVE);
 	sv_allowLoadPosition = Cvar_Get("sv_allowLoadPosition", "0", CVAR_ARCHIVE);
 	sv_loadPositionWaitTime = Cvar_Get("sv_loadPositionWaitTime", "180", CVAR_ARCHIVE);
-
+	
+	sv_disableRadio = Cvar_Get("sv_disableRadio", "0", CVAR_ARCHIVE);
+	
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
 
