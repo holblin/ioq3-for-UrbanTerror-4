@@ -538,6 +538,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 				// was connected before the level change
 				SV_DropClient( &svs.clients[i], denied );
 			} else {
+				svs.clients[i].muted = qfalse;
 				svs.clients[i].positionIsSaved = qfalse;
 				svs.clients[i].lastLoadPositionTime = 0;
 				svs.clients[i].lastGotoTime = 0;

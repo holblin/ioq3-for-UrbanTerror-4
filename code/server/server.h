@@ -166,7 +166,7 @@ typedef struct client_s {
 	int				rate;				// bytes / second
 	int				snapshotMsec;		// requests a snapshot every snapshotMsec unless rate choked
 	int				pureAuthentic;
-	qboolean  gotCP; // TTimo - additional flag to distinguish between a bad pure checksum, and no cp command at all
+	qboolean		gotCP; // TTimo - additional flag to distinguish between a bad pure checksum, and no cp command at all
 	netchan_t		netchan;
 	// TTimo
 	// queuing outgoing fragmented messages to send them properly, without udp packet bursts
@@ -176,13 +176,15 @@ typedef struct client_s {
 	netchan_buffer_t **netchan_end_queue;
 
 	int				oldServerTime;
-	qboolean			csUpdated[MAX_CONFIGSTRINGS+1];
+	qboolean		csUpdated[MAX_CONFIGSTRINGS+1];
 
-	vec3_t		savedPosition;
-	qboolean	positionIsSaved;
-	int		lastLoadPositionTime;
-	qboolean	allowGoto;
-	int		lastGotoTime;
+	qboolean		muted;
+	
+	vec3_t			savedPosition;
+	qboolean		positionIsSaved;
+	int				lastLoadPositionTime;
+	qboolean		allowGoto;
+	int				lastGotoTime;
 
 } client_t;
 

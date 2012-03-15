@@ -1560,6 +1560,15 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
 		if (!u->name && sv.state == SS_GAME) {
 			Cmd_Args_Sanitize();
 
+			if (cl->muted && (!Q_stricmp("say", Cmd_Argv(0)) ||
+						!Q_stricmp("say_team", Cmd_Argv(0)) ||
+						!Q_stricmp("tell", Cmd_Argv(0)) ||
+						!Q_stricmp("ut_radio", Cmd_Argv(0)) ||
+						!Q_stricmp("callvote", Cmd_Argv(0)))) {
+				SV_SendServerCommand(cl, "print \"You are currently muted and may not perform that action.\n\"");
+				return;
+			}
+			
 			qboolean goingToCallvoteCyclemap = qfalse;
 			if (Cmd_Argc() >= 2 && // If there are more arguments after "callvote cyclemap", it will still be a valid vote.
 					!Q_stricmp("callvote", Cmd_Argv(0)) &&

@@ -202,6 +202,15 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 		return;
 	}
 
+	if (cl != NULL) {
+		if (!strcmp((char *) message, "print \"The admin muted you: you cannot talk.\"\n")) {
+			cl->muted = qtrue;
+		}
+		else if (!strcmp((char *) message, "print \"The admin unmuted you.\"\n")) {
+			cl->muted = qfalse;
+		}
+	}
+
 	if (sv.inCallvoteCyclemap &&
 			cl == NULL &&
 			(!Q_strncmp((char *) message, "print \"", 7)) &&
