@@ -194,6 +194,14 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 		return;
 	}
 
+	if (sv.incognitoJoinSpec &&
+			cl == NULL &&
+			(!Q_strncmp((char *) message, "print \"", 7)) &&
+			msglen >= 27 + 7 &&
+			!strcmp("^7 joined the spectators.\n\"", ((char *) message) + msglen - 27)) {
+		return;
+	}
+
 	if (sv.inCallvoteCyclemap &&
 			cl == NULL &&
 			(!Q_strncmp((char *) message, "print \"", 7)) &&

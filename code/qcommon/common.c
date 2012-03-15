@@ -108,6 +108,7 @@ static void	(*rd_flush)( char *buffer );
 
 void Com_BeginRedirect (char *buffer, int buffersize, void (*flush)( char *) )
 {
+	in_redirect = qtrue;
 	if (!buffer || !buffersize || !flush)
 		return;
 	rd_buffer = buffer;
@@ -119,6 +120,7 @@ void Com_BeginRedirect (char *buffer, int buffersize, void (*flush)( char *) )
 
 void Com_EndRedirect (void)
 {
+	in_redirect = qfalse;
 	if ( rd_flush ) {
 		rd_flush(rd_buffer);
 	}
@@ -2498,6 +2500,8 @@ void Com_Init( char *commandLine ) {
 		Sys_Error ("Error during initialization");
 	}
 
+	in_redirect = qfalse;
+	
 	// Clear queues
 	Com_Memset( &eventQueue[ 0 ], 0, MAX_QUEUED_EVENTS * sizeof( sysEvent_t ) );
 	Com_Memset( &sys_packetReceived[ 0 ], 0, MAX_MSGLEN * sizeof( byte ) );

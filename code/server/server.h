@@ -83,6 +83,8 @@ typedef struct {
 	int				lastCallvoteCyclemapTime;
 	qboolean		inCallvoteCyclemap;
 	
+	qboolean		incognitoJoinSpec;
+	
 } server_t;
 
 

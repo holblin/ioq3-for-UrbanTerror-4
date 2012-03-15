@@ -758,44 +758,6 @@ static void SV_KillServer_f( void ) {
 	SV_Shutdown( "killserver" );
 }
 
-//===========================================================
-
-/*
-==================
-SV_AddOperatorCommands
-==================
-*/
-void SV_AddOperatorCommands( void ) {
-	static qboolean	initialized;
-
-	if ( initialized ) {
-		return;
-	}
-	initialized = qtrue;
-
-	Cmd_AddCommand ("heartbeat", SV_Heartbeat_f);
-	Cmd_AddCommand ("kick", SV_Kick_f);
-	Cmd_AddCommand ("banUser", SV_Ban_f);
-	Cmd_AddCommand ("banClient", SV_BanNum_f);
-	Cmd_AddCommand ("clientkick", SV_KickNum_f);
-	Cmd_AddCommand ("status", SV_Status_f);
-	Cmd_AddCommand ("serverinfo", SV_Serverinfo_f);
-	Cmd_AddCommand ("systeminfo", SV_Systeminfo_f);
-	Cmd_AddCommand ("dumpuser", SV_DumpUser_f);
-	Cmd_AddCommand ("map_restart", SV_MapRestart_f);
-	Cmd_AddCommand ("sectorlist", SV_SectorList_f);
-	Cmd_AddCommand ("map", SV_Map_f);
-#ifndef PRE_RELEASE_DEMO
-	Cmd_AddCommand ("devmap", SV_Map_f);
-	Cmd_AddCommand ("spmap", SV_Map_f);
-	Cmd_AddCommand ("spdevmap", SV_Map_f);
-#endif
-	Cmd_AddCommand ("killserver", SV_KillServer_f);
-	if( com_dedicated->integer ) {
-		Cmd_AddCommand ("say", SV_ConSay_f);
-		Cmd_AddCommand ("tell", SV_ConTell_f);
-	}
-}
 
 /*
 ==================
@@ -820,3 +782,135 @@ void SV_RemoveOperatorCommands( void ) {
 #endif
 }
 
+/*
+==================
+SV_SendClientCommand_f
+
+Send a reliable command to a specific client.
+==================
+*/
+static void SV_SendClientCommand_f(void) {
+	client_t	*cl;
+	char		*cmd;
+
+	// Make sure server is running.
+	if (!com_sv_running->integer) {
+		Com_Printf("Server is not running.\n");
+		return;
+	}
+
+	if (Cmd_Argc() < 3 || strlen(Cmd_Argv(2)) == 0) {
+		Com_Printf("Usage: sendclientcommand <player name> <command>\nPlayer may be 'all'\n");
+		return;
+	}
+
+	cl = SV_GetPlayerByHandle();
+	cmd = Cmd_ArgsFromRaw(2);
+
+	if (!cl) {
+		if (!Q_stricmp(Cmd_Argv(1), "all")) {
+			SV_SendServerCommand(NULL, "%s", cmd);
+		}
+		return;
+	}
+
+	SV_SendServerCommand(cl, "%s", cmd);
+}
+
+
+/*
+==================
+SV_Incognito_f
+
+Pretend that you disconnect, but really go to spec.
+==================
+*/
+static void SV_Incognito_f(void) {
+	client_t	*cl;
+	int		i;
+	char		cmd[64];
+
+	// Make sure server is running.
+	if (!com_sv_running->integer) {
+		Com_Printf("Server is not running.\n");
+		return;
+	}
+
+	if (!in_redirect) {
+		Com_Printf("The incognito command can only be run through rcon\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 1) {
+		Com_Printf("No arguments expected for incognito command\n");
+		return;
+	}
+
+	// Find the person connected to server who issued the incognito command.
+	for (i = 0, cl = svs.clients;; i++, cl++) {
+		if (i == sv_maxclients->integer) {
+			cl = NULL;
+			break;
+		}
+		if (cl->state >= CS_ACTIVE && NET_CompareAdr(cl->netchan.remoteAddress, svs.redirectAddress)) {
+			break; // found
+		}
+	}
+
+	if (cl != NULL) {
+		sv.incognitoJoinSpec = qtrue;
+		Q_snprintf(cmd, sizeof(cmd), "forceteam %i spectator\n", i);
+		Cmd_ExecuteString(cmd);
+		sv.incognitoJoinSpec = qfalse;
+		SV_SendServerCommand(NULL, "print \"%s" S_COLOR_WHITE " disconnected\n\"", cl->name); // color OK
+		Q_snprintf(cmd, sizeof(cmd), "sendclientcommand all cs %i \"\"\n", 548 + i);
+		Cmd_ExecuteString(cmd);
+	}
+	else {
+		Com_Printf("Must be connected to server for incognito to work\n");
+	}
+
+}
+
+//===========================================================
+
+/*
+==================
+SV_AddOperatorCommands
+==================
+*/
+void SV_AddOperatorCommands( void ) {
+	static qboolean	initialized;
+
+	if ( initialized ) {
+		return;
+	}
+	initialized = qtrue;
+	
+	Cmd_AddCommand ("heartbeat", SV_Heartbeat_f);
+	Cmd_AddCommand ("kick", SV_Kick_f);
+	Cmd_AddCommand ("banUser", SV_Ban_f);
+	Cmd_AddCommand ("banClient", SV_BanNum_f);
+	Cmd_AddCommand ("clientkick", SV_KickNum_f);
+	Cmd_AddCommand ("status", SV_Status_f);
+	Cmd_AddCommand ("serverinfo", SV_Serverinfo_f);
+	Cmd_AddCommand ("systeminfo", SV_Systeminfo_f);
+	Cmd_AddCommand ("dumpuser", SV_DumpUser_f);
+	Cmd_AddCommand ("map_restart", SV_MapRestart_f);
+	Cmd_AddCommand ("sectorlist", SV_SectorList_f);
+	Cmd_AddCommand ("map", SV_Map_f);
+#ifndef PRE_RELEASE_DEMO
+	Cmd_AddCommand ("devmap", SV_Map_f);
+	Cmd_AddCommand ("spmap", SV_Map_f);
+	Cmd_AddCommand ("spdevmap", SV_Map_f);
+#endif
+	Cmd_AddCommand ("killserver", SV_KillServer_f);
+	if( com_dedicated->integer ) {
+		Cmd_AddCommand ("say", SV_ConSay_f);
+		Cmd_AddCommand ("tell", SV_ConTell_f);
+	}
+	
+	Cmd_AddCommand ("sendclientcommand", SV_SendClientCommand_f);
+	Cmd_AddCommand ("incognito", SV_Incognito_f);
+
+}
