@@ -79,6 +79,10 @@ typedef struct {
 
 	int				restartTime;
 	int				time;
+	
+	int				lastCallvoteCyclemapTime;
+	qboolean		inCallvoteCyclemap;
+	
 } server_t;
 
 
@@ -284,8 +288,11 @@ extern	cvar_t	*sv_maxPing;
 extern	cvar_t	*sv_gametype;
 extern	cvar_t	*sv_pure;
 extern	cvar_t	*sv_floodProtect;
+
 extern	cvar_t	*sv_lanForceRate;
 extern	cvar_t	*sv_strictAuth;
+
+extern	cvar_t	*sv_callvoteCyclemapWaitTime;
 
 //===========================================================
 

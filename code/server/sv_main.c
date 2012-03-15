@@ -54,6 +54,8 @@ cvar_t	*sv_floodProtect;
 cvar_t	*sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 cvar_t	*sv_strictAuth;
 
+cvar_t	*sv_callvoteCyclemapWaitTime;
+
 /*
 =============================================================================
 
@@ -172,6 +174,7 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 	byte		message[MAX_MSGLEN];
 	client_t	*client;
 	int			j;
+	int			msglen;
 	
 	va_start (argptr,fmt);
 	Q_vsnprintf ((char *)message, sizeof(message), fmt,argptr);
@@ -181,8 +184,17 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 	// The actual cause of the bug is probably further downstream
 	// and should maybe be addressed later, but this certainly
 	// fixes the problem for now
-	if ( strlen ((char *)message) > 1022 ) {
+	msglen = strlen ((char *)message);
+	if ( msglen > 1022 ) {
 		return;
+	}
+
+	if (sv.inCallvoteCyclemap &&
+			cl == NULL &&
+			(!Q_strncmp((char *) message, "print \"", 7)) &&
+			msglen >= 17 + 7 &&
+			!strcmp(" called a vote.\n\"", ((char *) message) + msglen - 17)) {
+		sv.lastCallvoteCyclemapTime = svs.time;
 	}
 
 	if ( cl != NULL ) {
