@@ -686,9 +686,9 @@ void SV_Init (void) {
 	sv_callvoteCyclemapWaitTime = Cvar_Get("sv_callvoteCyclemapWaitTime", "0", CVAR_ARCHIVE);
 	
 	sv_allowGoto = Cvar_Get("sv_allowGoto", "0", CVAR_ARCHIVE);
-	sv_gotoWaitTime = Cvar_Get("sv_gotoWaitTime", "180", CVAR_ARCHIVE);
+	sv_gotoWaitTime = Cvar_Get("sv_gotoWaitTime", "1", CVAR_ARCHIVE);
 	sv_allowLoadPosition = Cvar_Get("sv_allowLoadPosition", "0", CVAR_ARCHIVE);
-	sv_loadPositionWaitTime = Cvar_Get("sv_loadPositionWaitTime", "180", CVAR_ARCHIVE);
+	sv_loadPositionWaitTime = Cvar_Get("sv_loadPositionWaitTime", "1", CVAR_ARCHIVE);
 	
 	sv_disableRadio = Cvar_Get("sv_disableRadio", "0", CVAR_ARCHIVE);
 	
