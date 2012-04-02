@@ -1377,12 +1377,12 @@ static void SV_UserAllowGoto_f(client_t *cl) {
 	while (qtrue) { // Provides break structure.
 		if (Cmd_Argc() == 1) { 
 			if (cl->allowGoto) {
-				cl->allowGoto = qtrue;
-				SV_SendServerCommand(cl, "print \"Your personal allow goto activated.\n\"");
-			}
-			else {
 				cl->allowGoto = qfalse;
 				SV_SendServerCommand(cl, "print \"Your personal allow goto deactivated.\n\"");
+			}
+			else {
+				cl->allowGoto = qtrue;
+				SV_SendServerCommand(cl, "print \"Your personal allow goto activated.\n\"");
 			}
 			return;
 		}
