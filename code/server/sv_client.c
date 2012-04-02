@@ -1226,6 +1226,7 @@ static void SV_DisplayGotoHelp_f(client_t *cl) {
 	SV_SendServerCommand(cl, "print \"    \\helpgoto       - show list of commands\n\"");
 	SV_SendServerCommand(cl, "print \"    \\saveposition   - save current position\n\"");
 	SV_SendServerCommand(cl, "print \"    \\loadposition   - load saved position%s\n\"",
+			(sv_allowLoadPosition->integer > 0) ? "" : " (currently disabled)");
 	SV_SendServerCommand(cl, "print \"    \\save           - alias of \\saveposition\n\"");
 	SV_SendServerCommand(cl, "print \"    \\load           - alias of \\loadposition%s\n\"",
 			(sv_allowLoadPosition->integer > 0) ? "" : " (currently disabled)");
