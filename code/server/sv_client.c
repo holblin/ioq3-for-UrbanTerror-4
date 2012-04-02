@@ -1226,7 +1226,10 @@ static void SV_DisplayGotoHelp_f(client_t *cl) {
 	SV_SendServerCommand(cl, "print \"    \\helpgoto       - show list of commands\n\"");
 	SV_SendServerCommand(cl, "print \"    \\saveposition   - save current position\n\"");
 	SV_SendServerCommand(cl, "print \"    \\loadposition   - load saved position%s\n\"",
+	SV_SendServerCommand(cl, "print \"    \\save           - alias of \\saveposition\n\"");
+	SV_SendServerCommand(cl, "print \"    \\load           - alias of \\loadposition%s\n\"",
 			(sv_allowLoadPosition->integer > 0) ? "" : " (currently disabled)");
+	SV_SendServerCommand(cl, "print \"    \\allowgoto      - switch allow / disallow goto\n\"");
 	SV_SendServerCommand(cl, "print \"    \\allowgoto 1    - allow others to goto where you are\n\"");
 	SV_SendServerCommand(cl, "print \"    \\allowgoto 0    - disallow others to goto where you are\n\"");
 	SV_SendServerCommand(cl, "print \"    \\goto <client>  - goto another player%s\n\"",
@@ -1372,6 +1375,17 @@ SV_UserAllowGoto_f
 */
 static void SV_UserAllowGoto_f(client_t *cl) {
 	while (qtrue) { // Provides break structure.
+		if (Cmd_Argc() == 1) { 
+			if (cl->allowGoto) {
+				cl->allowGoto = qtrue;
+				SV_SendServerCommand(cl, "print \"Your personal allow goto activated.\n\"");
+			}
+			else {
+				cl->allowGoto = qfalse;
+				SV_SendServerCommand(cl, "print \"Your personal allow goto deactivated.\n\"");
+			}
+			return;
+		}
 		if (Cmd_Argc() != 2) { break; }
 		if (strlen(Cmd_Argv(1)) != 1) { break; }
 		if (Cmd_Argv(1)[0] == '0') {
@@ -1515,6 +1529,8 @@ static ucmd_t ucmds_floodControl[] = {
 	{"helpgoto", SV_DisplayGotoHelp_f},
 	{"saveposition", SV_SavePosition_f},
 	{"loadposition", SV_LoadPosition_f},
+	{"save", SV_SavePosition_f},
+	{"load", SV_LoadPosition_f},
 	{"allowgoto", SV_UserAllowGoto_f},
 	{"goto", SV_Goto_f},
 	{NULL, NULL}
