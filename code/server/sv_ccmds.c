@@ -910,30 +910,6 @@ static void SV_KillServer_f( void ) {
 	SV_Shutdown( "killserver" );
 }
 
-
-/*
-==================
-SV_RemoveOperatorCommands
-==================
-*/
-void SV_RemoveOperatorCommands( void ) {
-#if 0
-	// removing these won't let the server start again
-	Cmd_RemoveCommand ("heartbeat");
-	Cmd_RemoveCommand ("kick");
-	Cmd_RemoveCommand ("banUser");
-	Cmd_RemoveCommand ("banClient");
-	Cmd_RemoveCommand ("status");
-	Cmd_RemoveCommand ("serverinfo");
-	Cmd_RemoveCommand ("systeminfo");
-	Cmd_RemoveCommand ("dumpuser");
-	Cmd_RemoveCommand ("map_restart");
-	Cmd_RemoveCommand ("sectorlist");
-	Cmd_RemoveCommand ("say");
-	Cmd_RemoveCommand ("tell");
-#endif
-}
-
 /*
 ==================
 SV_SendClientCommand_f
@@ -1629,6 +1605,8 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("sendclientcommand", SV_SendClientCommand_f);
 	Cmd_AddCommand ("incognito", SV_Incognito_f);
 
+}
+	
 /*
 ==================
 SV_RemoveOperatorCommands
