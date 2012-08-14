@@ -177,6 +177,12 @@ typedef struct client_s {
 	netchan_buffer_t *netchan_start_queue;
 	netchan_buffer_t **netchan_end_queue;
 
+	qboolean	demo_recording;	// are we currently recording this client?
+	fileHandle_t	demo_file;	// the file we are writing the demo to
+	qboolean	demo_waiting;	// are we still waiting for the first non-delta frame?
+	int		demo_backoff;	// how many packets (-1 actually) between non-delta frames?
+	int		demo_deltas;	// how many delta frames did we let through so far?
+	
 	int				oldServerTime;
 	qboolean		csUpdated[MAX_CONFIGSTRINGS+1];
 
@@ -281,6 +287,8 @@ extern	cvar_t	*sv_fps;
 extern	cvar_t	*sv_timeout;
 extern	cvar_t	*sv_zombietime;
 extern	cvar_t	*sv_rconPassword;
+extern	cvar_t	*sv_rconRecoveryPassword;
+extern	cvar_t	*sv_rconAllowedSpamIP;
 extern	cvar_t	*sv_privatePassword;
 extern	cvar_t	*sv_allowDownload;
 extern	cvar_t	*sv_maxclients;
@@ -306,6 +314,18 @@ extern	cvar_t	*sv_floodProtect;
 extern	cvar_t	*sv_lanForceRate;
 extern	cvar_t	*sv_strictAuth;
 
+
+
+extern	cvar_t	*sv_demonotice;
+
+extern  cvar_t  *sv_sayprefix;
+extern  cvar_t  *sv_tellprefix;
+extern  cvar_t  *sv_demofolder;
+
+#ifdef USE_AUTH
+extern	cvar_t	*sv_authServerIP;
+#endif
+
 extern	cvar_t	*sv_callvoteCyclemapWaitTime;
 
 extern	cvar_t	*sv_allowGoto;
@@ -316,6 +336,7 @@ extern	cvar_t	*sv_loadPositionWaitTime;
 extern	cvar_t	*sv_disableRadio;
 
 extern	cvar_t	*sv_specChatGlobal;
+
 
 //===========================================================
 
@@ -375,6 +396,7 @@ void SV_WriteDownloadToClient( client_t *cl , msg_t *msg );
 // sv_ccmds.c
 //
 void SV_Heartbeat_f( void );
+void SVD_WriteDemoFile(const client_t*, const msg_t*);
 
 //
 // sv_snapshot.c
@@ -385,6 +407,8 @@ void SV_WriteFrameToClient (client_t *client, msg_t *msg);
 void SV_SendMessageToClient( msg_t *msg, client_t *client );
 void SV_SendClientMessages( void );
 void SV_SendClientSnapshot( client_t *client );
+void SV_CheckClientUserinfoTimer( void );
+void SV_UpdateUserinfo_f( client_t *cl );
 
 //
 // sv_game.c

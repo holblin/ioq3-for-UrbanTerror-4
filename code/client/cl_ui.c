@@ -39,6 +39,12 @@ static void GetClientState( uiClientState_t *state ) {
 	Q_strncpyz( state->servername, cls.servername, sizeof( state->servername ) );
 	Q_strncpyz( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
 	Q_strncpyz( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
+	
+	//@Barbatos
+	#ifdef USE_AUTH
+	Q_strncpyz( state->serverAddress, NET_AdrToString(clc.serverAddress), sizeof( state->serverAddress ) );
+	#endif
+	
 	state->clientNum = cl.snap.ps.clientNum;
 }
 
@@ -322,6 +328,8 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "nettype", va("%i",server->netType));
 		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr));
 		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster));
+		Info_SetValueForKey( info, "auth_enable", va("%i", server->auth_enable));
+		Info_SetValueForKey( info, "password", va("%i", server->password));
 		Q_strncpyz(buf, info, buflen);
 	} else {
 		if (buf) {
@@ -664,6 +672,25 @@ static void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
 
 /*
 ====================
+Key_GetCatcher
+====================
+*/
+int Key_GetCatcher( void ) {
+	return cls.keyCatchers;
+}
+
+/*
+====================
+Ket_SetCatcher
+====================
+*/
+void Key_SetCatcher( int catcher ) {
+	cls.keyCatchers = catcher;
+}
+
+
+/*
+====================
 CLUI_GetCDKey
 ====================
 */
@@ -911,8 +938,7 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		return Key_GetCatcher();
 
 	case UI_KEY_SETCATCHER:
-		// Don't allow the ui module to close the console
-		Key_SetCatcher( args[1] | ( Key_GetCatcher( ) & KEYCATCH_CONSOLE ) );
+		Key_SetCatcher( args[1] );
 		return 0;
 
 	case UI_GETCLIPBOARDDATA:
@@ -1088,8 +1114,33 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_VERIFY_CDKEY:
 		return CL_CDKeyValidate(VMA(1), VMA(2));
 
-
+	//@Barbatos
+	#ifdef USE_AUTH
+	case UI_NET_STRINGTOADR:
+		return NET_StringToAdr( VMA(1), VMA(2));
 		
+	case UI_Q_VSNPRINTF:
+		return Q_vsnprintf( VMA(1), VMA(2), VMA(3), VMA(4));
+		
+	case UI_NET_SENDPACKET:
+		{
+			netadr_t addr;
+			const char * destination = VMA(4);     
+			
+			NET_StringToAdr( destination, &addr );                                                                                                                                                                                                                                   
+			NET_SendPacket( args[1], args[2], VMA(3), addr ); 
+		}
+		return 0;
+		
+	case UI_COPYSTRING:
+		return CopyString(VMA(1));
+
+	case UI_SYS_STARTPROCESS:
+		Sys_StartProcess( VMA(1), VMA(2) );
+		return 0;
+		
+	#endif
+	
 	default:
 		Com_Error( ERR_DROP, "Bad UI system trap: %ld", (long int) args[0] );
 
@@ -1104,7 +1155,7 @@ CL_ShutdownUI
 ====================
 */
 void CL_ShutdownUI( void ) {
-	Key_SetCatcher( Key_GetCatcher( ) & ~KEYCATCH_UI );
+	cls.keyCatchers &= ~KEYCATCH_UI;
 	cls.uiStarted = qfalse;
 	if ( !uivm ) {
 		return;

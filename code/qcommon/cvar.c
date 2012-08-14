@@ -28,7 +28,7 @@ cvar_t		*cvar_vars;
 cvar_t		*cvar_cheats;
 int			cvar_modifiedFlags;
 
-#define	MAX_CVARS	1024
+#define	MAX_CVARS	2048
 cvar_t		cvar_indexes[MAX_CVARS];
 int			cvar_numIndexes;
 
@@ -371,7 +371,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 					return var;
 			}
 
-			Com_Printf ("%s will be changed upon restarting.\n", var_name);
+			Com_Printf ("%s will be changed upon reloading.\n", var_name);
 			var->latchedString = CopyString(value);
 			var->modified = qtrue;
 			var->modificationCount++;
@@ -726,6 +726,9 @@ void Cvar_List_f( void ) {
 	for (var = cvar_vars ; var ; var = var->next, i++)
 	{
 		if (match && !Com_Filter(match, var->name, qfalse)) continue;
+		
+		// prefere never show the rconRecoveryPassword when list the cvars
+		if (!strcmp( var->name, "rconRecoveryPassword" )) continue;
 
 		if (var->flags & CVAR_SERVERINFO) {
 			Com_Printf("S");
@@ -920,9 +923,9 @@ void	Cvar_Update( vmCvar_t *vmCvar ) {
 	}
 	vmCvar->modificationCount = cv->modificationCount;
 	if ( strlen(cv->string)+1 > MAX_CVAR_VALUE_STRING ) 
-	  Com_Error( ERR_DROP, "Cvar_Update: src %s length %zd exceeds MAX_CVAR_VALUE_STRING",
+	  Com_Error( ERR_DROP, "Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
 		     cv->string, 
-		     strlen(cv->string));
+		     (int)strlen(cv->string));
 	Q_strncpyz( vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING ); 
 
 	vmCvar->value = cv->value;

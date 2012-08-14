@@ -423,7 +423,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 #ifndef DEDICATED
 	// Restart renderer
-	CL_StartHunkUsers( qtrue );
+	CL_StartHunkUsers( );
 #endif
 
 	// clear collision map data
@@ -514,6 +514,9 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 
 	// create a baseline for more efficient communications
 	SV_CreateBaseline ();
+	
+	// stop server-side demo (if any)
+	Cbuf_ExecuteText(EXEC_NOW, "stopserverdemo all");
 
 	for (i=0 ; i<sv_maxclients->integer ; i++) {
 		// send the new gamestate to all connected clients
@@ -662,6 +665,8 @@ void SV_Init (void) {
 
 	// server vars
 	sv_rconPassword = Cvar_Get ("rconPassword", "", CVAR_TEMP );
+	sv_rconRecoveryPassword = Cvar_Get ("rconRecoveryPassword", "", CVAR_INIT );
+	sv_rconAllowedSpamIP = Cvar_Get ("rconAllowedSpamIP", "", CVAR_INIT );
 	sv_privatePassword = Cvar_Get ("sv_privatePassword", "", CVAR_TEMP );
 	sv_fps = Cvar_Get ("sv_fps", "20", CVAR_TEMP );
 	sv_timeout = Cvar_Get ("sv_timeout", "200", CVAR_TEMP );
@@ -694,6 +699,20 @@ void SV_Init (void) {
 	
 	sv_specChatGlobal = Cvar_Get ("sv_specChatGlobal", "0", CVAR_ARCHIVE );
 	
+
+	sv_demonotice = Cvar_Get ("sv_demonotice", "Smile! You're on camera!", CVAR_ARCHIVE);
+	
+	sv_sayprefix = Cvar_Get ("sv_sayprefix", "console: ", CVAR_ARCHIVE );	
+	sv_tellprefix = Cvar_Get ("sv_tellprefix", "console_tell: ", CVAR_ARCHIVE );
+	sv_demofolder = Cvar_Get ("sv_demofolder", "serverdemos", CVAR_ARCHIVE );
+	
+	#ifdef USE_AUTH
+	sv_authServerIP = Cvar_Get("sv_authServerIP", "", CVAR_TEMP | CVAR_ROM);
+	#endif
+	
+
+
+
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
 
@@ -749,6 +768,9 @@ void SV_Shutdown( char *finalmsg ) {
 
 	Com_Printf( "----- Server Shutdown (%s) -----\n", finalmsg );
 
+	// stop server-side demos (if any)
+	Cbuf_ExecuteText(EXEC_NOW, "stopserverdemo all");
+	
 	if ( svs.clients && !com_errorEntered ) {
 		SV_FinalMessage( finalmsg );
 	}

@@ -58,6 +58,8 @@ static field_t TTY_con;
 static field_t ttyEditLines[ CON_HISTORY ];
 static int hist_current = -1, hist_count = 0;
 
+extern qboolean stdinIsATTY;
+
 /*
 ==================
 CON_FlushIn
@@ -260,7 +262,7 @@ void CON_Init( void )
 	// Make stdin reads non-blocking
 	fcntl( 0, F_SETFL, fcntl( 0, F_GETFL, 0 ) | O_NONBLOCK );
 
-	if (isatty(STDIN_FILENO)!=1)
+	if (!stdinIsATTY)
 	{
 		Com_Printf( "stdin is not a tty, tty console mode disabled\n");
 		ttycon_on = qfalse;
@@ -421,7 +423,7 @@ char *CON_Input( void )
 		FD_SET(0, &fdset); // stdin
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
-		if (select (1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
+		if (select(1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
 		{
 			return NULL;
 		}

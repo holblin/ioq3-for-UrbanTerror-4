@@ -1030,24 +1030,56 @@ NET_Sleep
 Sleeps msec or until something happens on the network
 ====================
 */
+/*
+====================
+NET_Sleep
+
+Sleeps msec or until something happens on the network or stdin
+====================
+*/
 void NET_Sleep( int msec ) {
 	struct timeval timeout;
 	fd_set	fdset;
+	int highestfd = 0;
 
 	if (!com_dedicated->integer)
 		return; // we're not a server, just run full speed
 
-	if (!ip_socket)
-		return;
-
-	if (msec < 0 )
-		return;
-
 	FD_ZERO(&fdset);
-	FD_SET(ip_socket, &fdset);
-	timeout.tv_sec = msec/1000;
-	timeout.tv_usec = (msec%1000)*1000;
-	select(ip_socket+1, &fdset, NULL, NULL, &timeout);
+
+	#ifndef __linux__
+		FD_SET(fileno(stdin), &fdset);
+		highestfd = fileno(stdin) + 1;
+	#endif
+	
+	if(ip_socket)
+	{
+		FD_SET(ip_socket, &fdset); // network socket
+		if(ip_socket >= highestfd)
+			highestfd = ip_socket + 1;
+	}
+
+	if(highestfd)
+	{
+		if(msec >= 0)
+		{
+			timeout.tv_sec = msec/1000;
+			timeout.tv_usec = (msec%1000)*1000;
+			select(highestfd, &fdset, NULL, NULL, &timeout);
+		}
+		else
+		{
+			// Block indefinitely
+			select(highestfd, &fdset, NULL, NULL, NULL);
+		}
+	}
+	#ifdef __linux__
+    else{
+        if ( msec < 0 )
+            msec = 2;
+        usleep( msec * 1000);
+    }
+	#endif
 }
 
 
@@ -1059,3 +1091,4 @@ NET_Restart_f
 void NET_Restart( void ) {
 	NET_Config( networkingEnabled );
 }
+
