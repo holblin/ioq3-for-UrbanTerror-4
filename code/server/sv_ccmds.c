@@ -1474,7 +1474,7 @@ static void SV_Auth_Whois_f( void ) {
 		return;
 	}
 		
-	if ( ! (Cvar_VariableValue("auth_enable") >= 1 ) )
+	if ( Cvar_VariableValue("auth") == 0 )
 	{
 		Com_Printf( "Auth services disabled\n" );
 		return;
@@ -1530,7 +1530,7 @@ static void SV_Auth_Ban_f( void ) {
 		return;
 	}
 	
-	if ( ! (Cvar_VariableValue("auth_enable") >= 1 ) )
+	if ( Cvar_VariableValue("auth") == 0 )
 	{
 		Com_Printf( "Auth services disabled\n" );
 		return;

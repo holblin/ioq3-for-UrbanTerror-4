@@ -209,7 +209,7 @@ typedef struct client_s {
 typedef struct {
 	netadr_t	adr;
 	int			challenge;
-	int			challengePing;
+	int 		challengePing;
 	int			time;				// time the last packet was sent to the autherize server
 	int			pingTime;			// time the challenge response was sent to client
 	int			firstTime;			// time the adr was first used, for authorize timeout checks
@@ -324,6 +324,7 @@ extern  cvar_t  *sv_demofolder;
 
 #ifdef USE_AUTH
 extern	cvar_t	*sv_authServerIP;
+extern  cvar_t  *sv_auth_engine;
 #endif
 
 extern	cvar_t	*sv_callvoteCyclemapWaitTime;

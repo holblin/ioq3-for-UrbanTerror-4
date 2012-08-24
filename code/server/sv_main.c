@@ -64,6 +64,7 @@ cvar_t 	*sv_demofolder;				//@Barbatos - the name of the folder that contains se
 //@Barbatos
 #ifdef USE_AUTH
 cvar_t	*sv_authServerIP;
+cvar_t  *sv_auth_engine;
 #endif
 
 cvar_t	*sv_callvoteCyclemapWaitTime;
@@ -476,7 +477,7 @@ void SVC_Info( netadr_t from ) {
 	
 	//@Barbatos
 	#ifdef USE_AUTH
-	Info_SetValueForKey( infostring, "auth_enable", Cvar_VariableString("auth_enable") );
+	Info_SetValueForKey( infostring, "auth", Cvar_VariableString("auth") );
 	#endif
 
 	//@Barbatos: if it's a passworded server, let the client know (for the server browser)
@@ -493,6 +494,8 @@ void SVC_Info( netadr_t from ) {
 	if( *gamedir ) {
 		Info_SetValueForKey( infostring, "game", gamedir );
 	}
+
+	Info_SetValueForKey(infostring, "modversion", Cvar_VariableString("g_modversion"));
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
 }

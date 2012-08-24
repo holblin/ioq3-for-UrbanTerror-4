@@ -328,8 +328,9 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "nettype", va("%i",server->netType));
 		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr));
 		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster));
-		Info_SetValueForKey( info, "auth_enable", va("%i", server->auth_enable));
+		Info_SetValueForKey( info, "auth", va("%i", server->auth));
 		Info_SetValueForKey( info, "password", va("%i", server->password));
+		Info_SetValueForKey( info, "modversion", server->modversion);
 		Q_strncpyz(buf, info, buflen);
 	} else {
 		if (buf) {
@@ -1135,9 +1136,9 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_COPYSTRING:
 		return CopyString(VMA(1));
 
-	case UI_SYS_STARTPROCESS:
-		Sys_StartProcess( VMA(1), VMA(2) );
-		return 0;
+	//case UI_SYS_STARTPROCESS:
+	//	Sys_StartProcess( VMA(1), VMA(2) );
+	//	return 0;
 		
 	#endif
 	
