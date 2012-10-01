@@ -1390,27 +1390,24 @@ static void SV_Auth_Whois_f( void ) {
 		return;
 	}
 
-	idnum = SV_Argc_to_idnum( 1 );
-	
-	// Couldn't find a client so check if we want to whois all of the clients
-	if( idnum == -1 ) 
+	if(!Q_stricmp(Cmd_Argv(1), "all"))
 	{
-		if(!Q_stricmp(Cmd_Argv(1), "all"))
+		for (slot=0, cl=svs.clients; slot < sv_maxclients->integer; slot++, cl++) 
 		{
-			for (slot=0, cl=svs.clients; slot < sv_maxclients->integer; slot++, cl++) 
-			{
-				if (cl->state != CS_ACTIVE) 
-					continue;
+			if (cl->state != CS_ACTIVE) 
+				continue;
 
-				VM_Call(gvm, GAME_AUTH_WHOIS, (int)(cl - svs.clients));
-			}
-
-			return;
+			VM_Call(gvm, GAME_AUTH_WHOIS, (int)(cl - svs.clients));
 		}
 
-		else
-			return;
+		return;
 	}
+
+	
+	// Is not a all so find a client
+	idnum = SV_Argc_to_idnum( 1 );
+	if( idnum == -1 )
+		return;
 	
 	cl = &svs.clients[idnum];
 
