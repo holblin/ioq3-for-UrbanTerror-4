@@ -2305,10 +2305,10 @@ void FS_SortFileList(char **filelist, int numfiles) {
 
 /*
 ================
-FS_NewDir_f
+FS_NewDir_f, FS_Maps_f, FS_ListFiles_f
 ================
 */
-void FS_NewDir_f( void ) {
+void FS_ListFiles_f( const char * extension /* = "" */ ) {
 	char	*filter;
 	char	**dirnames;
 	int		ndirs;
@@ -2324,7 +2324,7 @@ void FS_NewDir_f( void ) {
 
 	Com_Printf( "---------------\n" );
 
-	dirnames = FS_ListFilteredFiles( "", "", filter, &ndirs );
+	dirnames = FS_ListFilteredFiles( "", extension, filter, &ndirs );
 
 	FS_SortFileList(dirnames, ndirs);
 
@@ -2334,6 +2334,14 @@ void FS_NewDir_f( void ) {
 	}
 	Com_Printf( "%d files listed\n", ndirs );
 	FS_FreeFileList( dirnames );
+}
+
+void FS_NewDir_f( void ) {
+	FS_ListFiles_f( "" );
+}
+
+void FS_Maps_f( void ) {
+	FS_ListFiles_f( ".bsp" );
 }
 
 /*
@@ -2662,6 +2670,7 @@ void FS_Shutdown( qboolean closemfp ) {
 	Cmd_RemoveCommand( "path" );
 	Cmd_RemoveCommand( "dir" );
 	Cmd_RemoveCommand( "fdir" );
+	Cmd_RemoveCommand( "maps" );
 	Cmd_RemoveCommand( "touchFile" );
 
 #ifdef FS_MISSING
@@ -2791,6 +2800,7 @@ static void FS_Startup( const char *gameName )
 	// add our commands
 	Cmd_AddCommand ("path", FS_Path_f);
 	Cmd_AddCommand ("dir", FS_Dir_f );
+	Cmd_AddCommand ("maps", FS_Maps_f );
 	Cmd_AddCommand ("fdir", FS_NewDir_f );
 	Cmd_AddCommand ("touchFile", FS_TouchFile_f );
 
