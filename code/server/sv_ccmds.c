@@ -758,6 +758,74 @@ static void SV_Status_f( void ) {
 	Com_Printf ("\n");
 }
 
+static void SV_Status2_f( void ) {
+	int			i, j, l;
+	client_t	*cl;
+	playerState_t	*ps;
+	const char		*s;
+	int			ping;
+
+	// make sure server is running
+	if ( !com_sv_running->integer ) {
+		Com_Printf( "Server is not running.\n" );
+		return;
+	}
+
+	Com_Printf ("map: %s\n", sv_mapname->string );
+
+	Com_Printf ("num\tscore\tping\tname\tlastmsg\taddress\tqport\trate\tdemorecord");
+	
+	if ( Cvar_VariableValue("auth") != 0 ){
+		Com_Printf ("\tauth-whois");
+	}
+	Com_Printf ("\n");
+		
+	for (i=0,cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++)
+	{
+		if (!cl->state)
+			continue;
+		Com_Printf ("%i\t", i);
+		ps = SV_GameClientNum( i );
+		Com_Printf ("%i\t", ps->persistant[PERS_SCORE]);
+
+		if (cl->state == CS_CONNECTED)
+			Com_Printf ("CNCT\t");
+		else if (cl->state == CS_ZOMBIE)
+			Com_Printf ("ZMBI\t");
+		else
+		{
+			ping = cl->ping < 9999 ? cl->ping : 9999;
+			Com_Printf ("%i\t", ping);
+		}
+
+		Com_Printf ("%s^7\t", cl->name);
+    // TTimo adding a ^7 to reset the color
+    // NOTE: colored names in status breaks the padding (WONTFIX)
+
+		Com_Printf ("%i\t", svs.time - cl->lastPacketTime );
+
+		s = NET_AdrToString( cl->netchan.remoteAddress );
+		Com_Printf ("%s\t", s);
+		
+		Com_Printf ("%i\t", cl->netchan.qport);
+
+		Com_Printf ("%i\t", cl->rate);
+
+		if (client->demo_recording)
+			Com_Printf ("yes");
+		else
+			Com_Printf ("no");
+		
+		if ( Cvar_VariableValue("auth") != 0 ){
+			Com_Printf ("\t");
+			VM_Call(gvm, GAME_AUTH_WHOIS, (int)(cl - svs.clients));
+		}
+		
+		Com_Printf ("\n");
+	}
+	Com_Printf ("\n");
+}
+
 /*
 ==================
 SV_ConSay_f
@@ -1498,6 +1566,7 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("banClient", SV_BanNum_f);
 	Cmd_AddCommand ("clientkick", SV_KickNum_f);
 	Cmd_AddCommand ("status", SV_Status_f);
+	Cmd_AddCommand ("status2", SV_Status2_f);
 	Cmd_AddCommand ("serverinfo", SV_Serverinfo_f);
 	Cmd_AddCommand ("systeminfo", SV_Systeminfo_f);
 	Cmd_AddCommand ("dumpuser", SV_DumpUser_f);
