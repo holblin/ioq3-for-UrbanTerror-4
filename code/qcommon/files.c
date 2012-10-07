@@ -2313,14 +2313,6 @@ void FS_ListFiles_f( const char *extension , char *filter ) {
 	int		ndirs;
 	int		i;
 
-	if ( Cmd_Argc() < 2 ) {
-		Com_Printf( "usage: fdir <filter>\n" );
-		Com_Printf( "example: fdir *q3dm*.bsp\n");
-		return;
-	}
-
-	filter = Cmd_Argv( 1 );
-
 	Com_Printf( "---------------\n" );
 
 	dirnames = FS_ListFilteredFiles( "", extension, filter, &ndirs );
