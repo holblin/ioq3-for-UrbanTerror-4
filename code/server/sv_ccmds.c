@@ -759,7 +759,7 @@ static void SV_Status_f( void ) {
 }
 
 static void SV_Status2_f( void ) {
-	int			i, j, l;
+	int			i;
 	client_t	*cl;
 	playerState_t	*ps;
 	const char		*s;
@@ -811,7 +811,7 @@ static void SV_Status2_f( void ) {
 
 		Com_Printf ("%i\t", cl->rate);
 
-		if (client->demo_recording)
+		if (cl->demo_recording)
 			Com_Printf ("yes");
 		else
 			Com_Printf ("no");
