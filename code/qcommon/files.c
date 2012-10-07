@@ -2308,7 +2308,7 @@ void FS_SortFileList(char **filelist, int numfiles) {
 FS_NewDir_f, FS_Maps_f, FS_ListFiles_f
 ================
 */
-void FS_ListFiles_f( const char *extension , char *filter ) {
+void FS_ListFiles_f( const char *dir, const char *extension , char *filter ) {
 	char	**dirnames;
 	int		ndirs;
 	int		i;
@@ -2338,7 +2338,7 @@ void FS_FileDir_f( void ) {
 
 	filter = Cmd_Argv( 1 );
 
-	FS_ListFiles_f( "" , filter );
+	FS_ListFiles_f( "" , "" , filter );
 }
 
 void FS_MapList_f( void ) {
@@ -2350,7 +2350,8 @@ void FS_MapList_f( void ) {
 		return;
 	}
 	else if ( Cmd_Argc() == 1){
-		strcpy( filter, "*");
+		FS_ListFiles_f( "maps", ".bsp" , "");
+		return;
 	}
 	else {
 		input_filter = Cmd_Argv( 1 );
@@ -2361,10 +2362,11 @@ void FS_MapList_f( void ) {
 		
 		strcpy( filter , "*" );
 		strcat( filter , input_filter );
-		strcat( filter , "*" );		
+		strcat( filter , "*" );
+		
+		FS_ListFiles_f( "maps", ".bsp" , filter);
 	}
 
-	FS_ListFiles_f( ".bsp" , filter);
 }
 
 /*
