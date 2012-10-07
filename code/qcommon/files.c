@@ -2308,14 +2308,14 @@ void FS_SortFileList(char **filelist, int numfiles) {
 FS_NewDir_f, FS_Maps_f, FS_ListFiles_f
 ================
 */
-void FS_ListFiles_f( const char *dir, const char *extension , char *filter ) {
+void FS_ListFiles_f( char *filter ) {
 	char	**dirnames;
 	int		ndirs;
 	int		i;
 
 	Com_Printf( "---------------\n" );
 
-	dirnames = FS_ListFilteredFiles( "", extension, filter, &ndirs );
+	dirnames = FS_ListFilteredFiles( "", "", filter, &ndirs );
 
 	FS_SortFileList(dirnames, ndirs);
 
@@ -2338,7 +2338,7 @@ void FS_FileDir_f( void ) {
 
 	filter = Cmd_Argv( 1 );
 
-	FS_ListFiles_f( "" , "" , filter );
+	FS_ListFiles_f( filter );
 }
 
 void FS_MapList_f( void ) {
@@ -2350,21 +2350,21 @@ void FS_MapList_f( void ) {
 		return;
 	}
 	else if ( Cmd_Argc() == 1){
-		FS_ListFiles_f( "maps", ".bsp" , "");
+		FS_ListFiles_f( "maps/*.bsp" );
 		return;
 	}
 	else {
 		input_filter = Cmd_Argv( 1 );
-		if ( strlen(input_filter) > 1021 ){
+		if ( strlen(input_filter) > 1000 ){
 			Com_Printf( "The part_mapname is too long" );
 			return;
 		}
 		
-		strcpy( filter , "*" );
+		strcpy( filter , "maps/*" );
 		strcat( filter , input_filter );
-		strcat( filter , "*" );
+		strcat( filter , "*.bsp" );
 		
-		FS_ListFiles_f( "maps", ".bsp" , filter);
+		FS_ListFiles_f( filter);
 	}
 
 }
